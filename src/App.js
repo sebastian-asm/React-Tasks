@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import { useContext } from 'react';
 
-function App() {
+import { TodoContext } from './context/TodoContext';
+import CreateTodoButton from './components/CreateTodoButton';
+import Modal from './components/Modal';
+import TodoCounter from './components/TodoCounter';
+import TodoItem from './components/TodoItem';
+import TodoList from './components/TodoList';
+import TodoSearch from './components/TodoSearch';
+import TodoForm from './components/TodoForm';
+
+export default function App() {
+  const {
+    error,
+    loading,
+    searchedTodos,
+    completeTodo,
+    deleteTodo,
+    openModal,
+    setOpenModal,
+  } = useContext(TodoContext);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <TodoCounter />
+      <TodoSearch />
+
+      <TodoList>
+        {error && <p>Hubo un error inesperado</p>}
+        {loading && <p>Cargando...</p>}
+        {!loading && !searchedTodos.length && <p>Agrega tu primera tarea</p>}
+
+        {searchedTodos.map((todo, index) => (
+          <TodoItem
+            key={index}
+            onComplete={() => completeTodo(todo.text)}
+            onDelete={() => deleteTodo(todo.text)}
+            {...todo}
+          />
+        ))}
+      </TodoList>
+
+      {openModal && (
+        <Modal>
+          <TodoForm />
+        </Modal>
+      )}
+
+      <CreateTodoButton setOpenModal={setOpenModal} />
+    </>
   );
 }
-
-export default App;
